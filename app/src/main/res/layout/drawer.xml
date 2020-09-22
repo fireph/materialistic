@@ -18,14 +18,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:animateLayoutChanges="true"
     android:clickable="true"
     android:focusable="true"
-    tools:context="io.github.hidroh.materialistic.DrawerActivity"
-    tools:targetApi="honeycomb">
+    tools:context="io.github.hidroh.materialistic.DrawerActivity">
 
     <FrameLayout
         android:layout_width="match_parent"

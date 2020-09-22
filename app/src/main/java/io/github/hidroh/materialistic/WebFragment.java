@@ -48,6 +48,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.JavascriptInterface;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -157,6 +158,14 @@ public class WebFragment extends LazyLoadFragment
             mEditText = (EditText) mFragmentView.findViewById(R.id.edittext);
             setUpWebControls(mFragmentView);
             setUpWebView(mFragmentView);
+
+            mScrollViewContent.setOnApplyWindowInsetsListener((View.OnApplyWindowInsetsListener) (view, windowInsets) -> {
+                mScrollViewContent.setPadding(0, 0, 0, windowInsets.getSystemWindowInsetBottom());
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mControls.getLayoutParams();
+                params.topMargin = windowInsets.getSystemWindowInsetBottom();
+                mControls.setLayoutParams(params);
+                return windowInsets;
+            });
         }
         return mFragmentView;
     }

@@ -75,6 +75,10 @@ abstract class BaseListFragment extends BaseFragment implements Scrollable {
                 }
             }
         });
+        mRecyclerView.setOnApplyWindowInsetsListener((v, windowInsets) -> {
+            mRecyclerView.setPadding(0, 0, 0, windowInsets.getSystemWindowInsetBottom());
+            return windowInsets;
+        });
     }
 
     @Override

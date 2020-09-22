@@ -23,6 +23,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,9 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.content.ContextCompat;
@@ -54,6 +58,10 @@ import io.github.hidroh.materialistic.widget.NavFloatingActionButton;
 import io.github.hidroh.materialistic.widget.PopupMenu;
 import io.github.hidroh.materialistic.widget.ViewPager;
 
+import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+
 /**
  * List activity that renders alternative layouts for portrait/landscape
  */
@@ -73,6 +81,8 @@ public abstract class BaseListActivity extends DrawerActivity implements MultiPa
     @Inject SessionManager mSessionManager;
     @Inject CustomTabsDelegate mCustomTabsDelegate;
     @Inject KeyDelegate mKeyDelegate;
+    private CoordinatorLayout mCoordinator;
+    private Toolbar mToolbar;
     private AppBarLayout mAppBar;
     private TabLayout mTabLayout;
     private FloatingActionButton mReplyButton;
@@ -96,15 +106,17 @@ public abstract class BaseListActivity extends DrawerActivity implements MultiPa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
         setTitle(getDefaultTitle());
-        setSupportActionBar((Toolbar) findViewById(R.id.toolbar));
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME |
                 ActionBar.DISPLAY_HOME_AS_UP | ActionBar.DISPLAY_SHOW_TITLE);
-        findViewById(R.id.toolbar).setOnClickListener(v -> {
+        mToolbar.setOnClickListener(v -> {
             Scrollable scrollable = getScrollableList();
             if (scrollable != null) {
                 scrollable.scrollToTop();
             }
         });
+        mCoordinator = findViewById(R.id.content_frame);
         mAppBar = (AppBarLayout) findViewById(R.id.appbar);
         mIsMultiPane = getResources().getBoolean(R.bool.multi_pane);
         if (mIsMultiPane) {
@@ -148,6 +160,11 @@ public abstract class BaseListActivity extends DrawerActivity implements MultiPa
                 R.string.pref_external,
                 R.string.pref_story_display,
                 R.string.pref_multi_window);
+
+        mToolbar.setOnApplyWindowInsetsListener((view, windowInsets) -> {
+            mToolbar.setPadding(0, windowInsets.getSystemWindowInsetTop(), 0, 0);
+            return windowInsets;
+        });
     }
 
     @Override
@@ -211,13 +228,13 @@ public abstract class BaseListActivity extends DrawerActivity implements MultiPa
         if (item.getItemId() == R.id.menu_share) {
             View anchor = findViewById(R.id.menu_share);
             AppUtils.share(this, mPopupMenu, anchor == null ?
-                    findViewById(R.id.toolbar) : anchor, mSelectedItem);
+                    mToolbar : anchor, mSelectedItem);
             return true;
         }
         if (item.getItemId() == R.id.menu_external) {
             View anchor = findViewById(R.id.menu_external);
             AppUtils.openExternal(this, mPopupMenu, anchor == null ?
-                    findViewById(R.id.toolbar) : anchor,
+                    mToolbar : anchor,
                     mSelectedItem, mCustomTabsDelegate.getSession());
             return true;
         }
